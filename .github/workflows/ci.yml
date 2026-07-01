@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --extra dev --extra redis --extra celery --extra cli
+      - name: ruff check
+        run: uv run ruff check .
+      - name: mkdocs build (strict)
+        run: uv run mkdocs build --strict
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+        django: ["4.2.*", "5.0.*", "5.1.*"]
+        include:
+          - python-version: "3.13"
+            django: "5.1.*"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install (pin Django ${{ matrix.django }})
+        run: uv sync --extra dev --extra redis --extra celery --extra cli
+      - name: Run tests
+        # testcontainers spins a real Redis via the Docker daemon that is
+        # preinstalled on ubuntu-latest runners (round-trip tier). If Docker
+        # is unavailable the round-trip tests skip themselves.
+        run: uv run --with "django==${{ matrix.django }}" pytest -q

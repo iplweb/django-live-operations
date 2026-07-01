@@ -1,0 +1,9 @@
+{% load live_operations %}
+<ol class="op-stages">
+{% for stage_name in op.stages %}{% with state=op.stage_states|get_item:stage_name %}
+<li class="op-stage op-stage--{{ state|default:'pending' }}">
+  {% if state == 'done' %}&#10003;{% elif state == 'active' %}&#9679;{% elif state == 'failed' or state == 'cancelled' %}&#10007;{% else %}&#9675;{% endif %}
+  {{ stage_name }}
+</li>
+{% endwith %}{% endfor %}
+</ol>

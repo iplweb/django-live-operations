@@ -1,0 +1,91 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-live-operations"
+version = "0.1.0"
+description = "Long-running operations with live WebSocket+HTMX UI (no reload, no polling)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "iplweb", email = "support@iplweb.pl" }]
+maintainers = [{ name = "Michał Pasternak", email = "michal.dtz@gmail.com" }]
+keywords = [
+    "django",
+    "channels",
+    "websocket",
+    "htmx",
+    "progress",
+    "long-running",
+    "celery",
+    "real-time",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = [
+    "django>=4.2",
+    "channels>=4",
+    "django-channels-broadcast>=0.2.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/iplweb/django-live-operations"
+Repository = "https://github.com/iplweb/django-live-operations"
+Documentation = "https://github.com/iplweb/django-live-operations/tree/main/docs"
+Changelog = "https://github.com/iplweb/django-live-operations/blob/main/CHANGELOG.md"
+Issues = "https://github.com/iplweb/django-live-operations/issues"
+
+[project.optional-dependencies]
+celery = ["celery>=5"]
+cli = ["tqdm>=4"]
+redis = ["channels-redis>=4"]
+dev = [
+    "pytest",
+    "pytest-django",
+    "pytest-asyncio",
+    "channels[daphne]",
+    "ruff",
+    "mkdocs-material",
+    "testcontainers[redis]>=4",
+    "channels-redis>=4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["live_operations"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# test_roundtrip.py imports channels/live_operations modules AFTER a
+# pytest.skip(allow_module_level=True) guard that bails out when Docker or
+# testcontainers is unavailable. The imports must follow the guard, so the
+# E402 "module level import not at top of file" is intentional here.
+"tests/test_roundtrip.py" = ["E402"]
