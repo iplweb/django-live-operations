@@ -16,7 +16,7 @@ from live_operations.views import (
 class CreateDemoImportView(CreateLiveOperationView):
     model = DemoImport
     form_class = DemoImportForm
-    template_name = "demo/demoimport_create.html"
+    template_name = "demo/demo_import_create.html"
 
 
 class LiveDemoImportView(LiveOperationView):
