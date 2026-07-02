@@ -16,6 +16,7 @@ Security model (§8):
 - A token for op A does NOT authorise op B's channel — the channel list is
   also embedded and verified.
 """
+
 from channels_broadcast.security import issue_subscription_token
 
 # 24 h default; override via LIVE_OPERATIONS["TOKEN_TTL_SECONDS"]

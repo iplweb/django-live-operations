@@ -10,6 +10,7 @@ Security properties verified:
 Verification is delegated to channels_broadcast.security.verify_subscription_token
 (the same function called by NotificationsConsumer at connect time).
 """
+
 import time
 
 import pytest
@@ -68,12 +69,8 @@ def test_subscription_token_property_matches_make_token(user_a, op_a):
     fn_token = make_subscription_token(user_a, op_a)
     # Both tokens must be accepted by the verifier (they may differ in
     # timestamp; assert both are valid rather than equal).
-    assert verify_subscription_token(prop_token, user_a) == [
-        f"liveop.{op_a.pk}"
-    ]
-    assert verify_subscription_token(fn_token, user_a) == [
-        f"liveop.{op_a.pk}"
-    ]
+    assert verify_subscription_token(prop_token, user_a) == [f"liveop.{op_a.pk}"]
+    assert verify_subscription_token(fn_token, user_a) == [f"liveop.{op_a.pk}"]
 
 
 # ---- cross-operation rejection ----------------------------------------

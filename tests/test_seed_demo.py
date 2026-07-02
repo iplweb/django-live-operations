@@ -2,6 +2,7 @@
 Verify seed_demo idempotency by exercising the same get_or_create logic
 directly (without depending on the example Django project settings).
 """
+
 import pytest
 from django.contrib.auth import get_user_model
 

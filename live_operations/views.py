@@ -8,6 +8,7 @@ Consumer apps subclass these views, set model/form_class, and register their
 own URL patterns under app_name="live_operations".  See tests/urls.py for an
 example.
 """
+
 from __future__ import annotations
 
 from django.contrib.auth.mixins import AccessMixin
@@ -33,9 +34,10 @@ class BaseLiveOperationMixin(AccessMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         required_group = get_setting("REQUIRED_GROUP")
-        if required_group and not request.user.groups.filter(
-            name=required_group
-        ).exists():
+        if (
+            required_group
+            and not request.user.groups.filter(name=required_group).exists()
+        ):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 

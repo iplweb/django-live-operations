@@ -47,11 +47,7 @@ def render_op_result(op):
         # is the only trusted markup; everything interpolated is escaped.
         from django.utils.html import escape
 
-        parts = [
-            escape(f"{k}={v}")
-            for k, v in render_ctx.items()
-            if k != "operation"
-        ]
+        parts = [escape(f"{k}={v}") for k, v in render_ctx.items() if k != "operation"]
         return mark_safe("<br>".join(parts))
 
 

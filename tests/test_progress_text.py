@@ -1,6 +1,7 @@
 """
 Tests for TextProgress — captures stdout/StringIO, no channel layer.
 """
+
 import io
 
 import pytest

@@ -11,6 +11,7 @@ Usage:
 
 Typical use: zero-infra smoke test / CI dry-run that does not need Redis or ASGI.
 """
+
 from __future__ import annotations
 
 from django.core.management.base import BaseCommand, CommandError
@@ -45,9 +46,7 @@ class Command(BaseCommand):
         # Resolve model class
         parts = model_path.split(".")
         if len(parts) != 2:
-            raise CommandError(
-                f"Expected 'app_label.ModelName', got {model_path!r}."
-            )
+            raise CommandError(f"Expected 'app_label.ModelName', got {model_path!r}.")
         app_label, model_name = parts
         try:
             model_cls = apps.get_model(app_label, model_name)
@@ -57,9 +56,7 @@ class Command(BaseCommand):
         from live_operations.models import LiveOperation
 
         if not issubclass(model_cls, LiveOperation):
-            raise CommandError(
-                f"{model_path} does not subclass LiveOperation."
-            )
+            raise CommandError(f"{model_path} does not subclass LiveOperation.")
 
         # Resolve owner
         from django.contrib.auth import get_user_model
@@ -80,9 +77,7 @@ class Command(BaseCommand):
                     password="admin",
                 )
                 self.stdout.write(
-                    self.style.WARNING(
-                        "No superuser found — created admin/admin."
-                    )
+                    self.style.WARNING("No superuser found — created admin/admin.")
                 )
 
         # Instantiate and run
@@ -90,9 +85,7 @@ class Command(BaseCommand):
         p = TextProgress(op, stream=self.stdout)
 
         self.stdout.write(
-            self.style.NOTICE(
-                f"Running {model_path} (pk={op.pk}) as {owner}…"
-            )
+            self.style.NOTICE(f"Running {model_path} (pk={op.pk}) as {owner}…")
         )
 
         task_run(op, p)

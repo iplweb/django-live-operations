@@ -1,4 +1,5 @@
 """Test URL configuration — concrete DemoOp views under live_operations namespace."""
+
 from django.urls import path
 
 from tests.views import (

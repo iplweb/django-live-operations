@@ -17,6 +17,7 @@ Usage in your ASGI app::
         ),
     })
 """
+
 from django.urls import path
 
 from live_operations.consumers import LiveOperationConsumer

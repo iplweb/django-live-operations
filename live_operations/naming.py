@@ -9,6 +9,7 @@ class_to_snake uses the inflection-style two-pass regex:
 Examples: ImportPunktacji→import_punktacji, ImportPBN2→import_pbn2,
           ABCTest→abc_test, DemoOp→demo_op.
 """
+
 from __future__ import annotations
 
 import re

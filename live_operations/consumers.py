@@ -16,6 +16,7 @@ NotificationsConsumer so real Notification objects are properly
 acknowledged. All other client→server messages are silently ignored
 (none are defined in this protocol).
 """
+
 from __future__ import annotations
 
 import json
@@ -32,16 +33,14 @@ class LiveOperationConsumer(NotificationsConsumer):
     def connect(self) -> None:
         super().connect()
 
-        liveop_channels = [
-            c for c in self.channels if c.startswith("liveop.")
-        ]
+        liveop_channels = [c for c in self.channels if c.startswith("liveop.")]
         if not liveop_channels:
             # No authorised liveop channel — token invalid/mismatched user.
             self.close()
             return
 
         for channel in liveop_channels:
-            pk_str = channel[len("liveop."):]
+            pk_str = channel[len("liveop.") :]
             operation = _find_operation(pk_str)
             if operation is None:
                 logger.warning(

@@ -8,6 +8,7 @@ Idempotent: safe to call multiple times; never duplicates the user.
 
 Auto-login: visit http://localhost:8000/__login__/ to log in as the demo user.
 """
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
@@ -35,9 +36,7 @@ class Command(BaseCommand):
             user.set_password(password)
             user.save(update_fields=["password"])
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"Created superuser: {username} / {password}"
-                )
+                self.style.SUCCESS(f"Created superuser: {username} / {password}")
             )
         else:
             self.stdout.write(
@@ -45,7 +44,5 @@ class Command(BaseCommand):
             )
 
         self.stdout.write(
-            self.style.SUCCESS(
-                "Auto-login URL: http://localhost:8000/__login__/"
-            )
+            self.style.SUCCESS("Auto-login URL: http://localhost:8000/__login__/")
         )

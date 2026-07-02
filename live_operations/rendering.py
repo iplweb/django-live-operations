@@ -7,6 +7,7 @@ chain_to OOB swaps.  Used by:
   - live_operations templatetag
   - WebProgress.chain_to  (passes oob_target to trigger OOB container swap)
 """
+
 from __future__ import annotations
 
 from typing import Any, Optional

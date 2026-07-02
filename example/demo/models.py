@@ -3,6 +3,7 @@ DemoImport — a concrete LiveOperation that simulates a 5-stage file import.
 
 Each stage does a short time.sleep loop so the browser demo shows live progress.
 """
+
 import time
 
 from live_operations.models import LiveOperation

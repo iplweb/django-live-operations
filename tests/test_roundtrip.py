@@ -15,6 +15,7 @@ Tests:
    state committed to DB before result fragment is delivered; late connector
    sees result.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -147,9 +148,7 @@ def user(db):
 
 
 @pytest.mark.django_db(transaction=True)
-async def test_webprogress_delivers_to_connected_client(
-    user, redis_channel_layer
-):
+async def test_webprogress_delivers_to_connected_client(user, redis_channel_layer):
     """
     Full Redis round-trip: WebProgress.status()/log() → Redis group_send →
     LiveOperationConsumer → WebsocketCommunicator receives the frame.
@@ -206,9 +205,7 @@ async def test_webprogress_delivers_to_connected_client(
 
 
 @pytest.mark.django_db(transaction=True)
-async def test_fd388_late_connector_receives_result_snapshot(
-    user, redis_channel_layer
-):
+async def test_fd388_late_connector_receives_result_snapshot(user, redis_channel_layer):
     """
     FD#388 headline guarantee:
 
@@ -277,9 +274,7 @@ async def test_fd388_late_connector_receives_result_snapshot(
 
 
 @pytest.mark.django_db(transaction=True)
-async def test_s19_4_terminal_committed_before_result_push(
-    user, redis_channel_layer
-):
+async def test_s19_4_terminal_committed_before_result_push(user, redis_channel_layer):
     """
     §19.4: when result() is called inside transaction.atomic(), the terminal
     state is committed to DB BEFORE the result fragment is delivered.

@@ -15,6 +15,7 @@ task_run(operation, progress):
   5. On other Exception → set traceback + error state.
   6. Auto-finalize if run() returned without calling p.result().
 """
+
 from __future__ import annotations
 
 import sys
@@ -160,7 +161,5 @@ def _handle_error(operation: Any, traceback_str: str, progress: Any) -> None:
     operation.finished_on = timezone.now()
     operation.finished_successfully = False
     operation.traceback = traceback_str
-    operation.save(
-        update_fields=["finished_on", "finished_successfully", "traceback"]
-    )
+    operation.save(update_fields=["finished_on", "finished_successfully", "traceback"])
     progress.push_error()

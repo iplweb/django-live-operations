@@ -12,6 +12,7 @@ status_text/percent/log/log_seq are placeholder fields; in v1 default they
 are written only by p.result() / p.error() (via result_context), not during
 live progress.
 """
+
 from __future__ import annotations
 
 from uuid import uuid4
@@ -63,9 +64,7 @@ class LiveOperation(models.Model):
 
     def run(self, p) -> None:  # noqa: ANN001
         """Override in concrete subclasses to implement the operation logic."""
-        raise NotImplementedError(
-            f"{self.__class__.__name__}.run() is not implemented"
-        )
+        raise NotImplementedError(f"{self.__class__.__name__}.run() is not implemented")
 
     # ------------------------------------------------------------------ #
     # State machine                                                        #

@@ -5,6 +5,7 @@ Asserts:
 - File exists at the expected static path.
 - File contains the required plugin integration points.
 """
+
 from pathlib import Path
 
 import live_operations

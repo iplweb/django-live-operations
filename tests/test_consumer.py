@@ -11,6 +11,7 @@ Scenarios:
 Uses channels.testing.WebsocketCommunicator + InMemoryChannelLayer.
 pytest-asyncio asyncio_mode="auto" (set in pyproject.toml).
 """
+
 from __future__ import annotations
 
 import json
@@ -216,9 +217,7 @@ async def test_snapshot_uses_liveop_html_envelope_no_id(user, running_op):
 
 
 @pytest.mark.django_db(transaction=True)
-async def test_ack_message_delegated_to_base_handler(
-    user, running_op, monkeypatch
-):
+async def test_ack_message_delegated_to_base_handler(user, running_op, monkeypatch):
     """ack_message frames are delegated to NotificationsConsumer.receive()."""
     import asyncio
 
@@ -239,9 +238,7 @@ async def test_ack_message_delegated_to_base_handler(
     assert connected
     await communicator.receive_from(timeout=2)  # drain snapshot
 
-    await communicator.send_to(
-        text_data=json.dumps({"type": "ack_message", "id": 0})
-    )
+    await communicator.send_to(text_data=json.dumps({"type": "ack_message", "id": 0}))
     await asyncio.sleep(0.05)
 
     assert len(delegated) == 1

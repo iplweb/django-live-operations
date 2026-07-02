@@ -3,6 +3,7 @@ Tests for the run_liveop management command.
 
 Run a multi-stage operation synchronously via TextProgress — no Redis/ASGI.
 """
+
 import io
 
 import pytest

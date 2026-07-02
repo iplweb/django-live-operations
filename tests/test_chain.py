@@ -7,6 +7,7 @@ Covers:
 - TextProgress.chain_to: next op's run executed inline (side effect assert)
 - Eager runner: ChainOpA chains to NextOp, both run to completion
 """
+
 import io
 
 import pytest
@@ -77,11 +78,7 @@ def test_chain_to_pushes_liveop_chain_envelope(op_a, op_b, fake_layer):
     wp = WebProgress(op_a, fake_layer)
     wp.chain_to(op_b)
 
-    chain_msgs = [
-        msg
-        for _, msg in fake_layer.sent
-        if "liveop_chain" in msg
-    ]
+    chain_msgs = [msg for _, msg in fake_layer.sent if "liveop_chain" in msg]
     assert chain_msgs, "No liveop_chain message sent"
     chain_data = chain_msgs[0]["liveop_chain"]
     assert "channel" in chain_data
@@ -97,9 +94,7 @@ def test_chain_to_pushes_container_oob_swap(op_a, op_b, fake_layer):
     wp.chain_to(op_b)
 
     html_msgs = [
-        msg["liveop_html"]
-        for _, msg in fake_layer.sent
-        if "liveop_html" in msg
+        msg["liveop_html"] for _, msg in fake_layer.sent if "liveop_html" in msg
     ]
     assert html_msgs, "No liveop_html OOB push found"
 

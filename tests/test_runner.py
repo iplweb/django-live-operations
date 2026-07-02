@@ -4,6 +4,7 @@ Tests for runner.enqueue / runner.task_run.
 All tests use TextProgress (via io.StringIO) so no channel layer is needed.
 eager runner runs synchronously — no async setup required.
 """
+
 import io
 import time
 

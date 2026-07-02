@@ -1,4 +1,5 @@
 """Concrete view subclasses for DemoOp — used only in the test suite."""
+
 from django import forms
 
 from live_operations.views import (

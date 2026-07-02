@@ -2,6 +2,7 @@
 Tests for LiveOperation model: get_state transitions, abstract run raises,
 naming resolvers delegate correctly.
 """
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone

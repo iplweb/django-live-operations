@@ -7,6 +7,7 @@ Covers:
 - TextProgress: stage headers printed in correct order with [N/Total] prefix
 - _stages.html template renders correct markers for each state
 """
+
 import io
 
 import pytest

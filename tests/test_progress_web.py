@@ -5,6 +5,7 @@ Tests for WebProgress — uses a fake async channel layer.
 No top-level "id" key (would be auto-ACKed as Notification).
 Fragment contains region id + hx-swap-oob.
 """
+
 import pytest
 from django.contrib.auth import get_user_model
 

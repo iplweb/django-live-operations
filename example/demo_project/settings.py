@@ -8,14 +8,13 @@ Env vars:
   SECRET_KEY         — override the dev key
   DEBUG              — default True
 """
+
 import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "demo-insecure-key-change-in-production"
-)
+SECRET_KEY = os.environ.get("SECRET_KEY", "demo-insecure-key-change-in-production")
 
 DEBUG = os.environ.get("DEBUG", "true").lower() not in ("0", "false", "no")
 

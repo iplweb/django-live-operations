@@ -11,6 +11,7 @@ LiveOperationConsumer extends channels_broadcast.NotificationsConsumer,
 so the same path handles both channels_broadcast token subscription and
 liveop snapshot-on-connect (§19.1).
 """
+
 import os
 
 from channels.auth import AuthMiddlewareStack

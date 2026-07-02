@@ -1,4 +1,5 @@
 """Tests for the {% live_operation %} templatetag and render_op_result."""
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.template import Context, Template
