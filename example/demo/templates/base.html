@@ -26,6 +26,9 @@
   .op-stage--failed, .op-stage--cancelled { background: #e44; color: #fff; }
   #op-result { margin-top: 1rem; padding: 1rem; background: #f0fff0;
                border-left: 4px solid #4c4; }
+  /* Before a result arrives the div holds only whitespace (so :empty won't
+     match). Hide the green result box until it actually has content. */
+  #op-result:not(:has(> *)) { display: none; }
   .liveop-connected    { color: #4c4; font-size: 0.8rem; }
   .liveop-disconnected { color: #e44; font-size: 0.8rem; }
   table { border-collapse: collapse; width: 100%; }
