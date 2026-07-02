@@ -129,6 +129,26 @@ def test_cancel_path_pushes_op_result_fragment(user):
 
 
 @pytest.mark.django_db(transaction=True)
+def test_task_run_emits_liveop_finished_signal(user):
+    """Every terminal outcome pushes a single liveop_finished signal carrying
+    the operation's final state and URL, so clients can react to completion."""
+    op = DemoOp.objects.create(owner=user)
+    layer = FakeChannelLayer()
+    wp = WebProgress(op, layer)
+
+    runner.task_run(op, wp)
+
+    finished_msgs = [msg for _, msg in layer.sent if "liveop_finished" in msg]
+    assert len(finished_msgs) == 1, "exactly one liveop_finished signal per run"
+    # Must carry the routing type, or the channel layer drops it before the client.
+    assert finished_msgs[0]["type"] == "chat_message"
+    payload = finished_msgs[0]["liveop_finished"]
+    assert payload["state"] == "FINISHED_OK"
+    assert payload["url"] == op.get_absolute_url()
+    assert payload["pk"] == str(op.pk)
+
+
+@pytest.mark.django_db(transaction=True)
 def test_error_path_pushes_generic_op_result_no_traceback(user):
     """Error path must push generic op-result fragment — no traceback in push."""
     op = ErrorOp.objects.create(owner=user)

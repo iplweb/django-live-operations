@@ -120,34 +120,40 @@ def task_run(operation: Any, progress: Any) -> None:
 def _task_run(operation: Any, progress: Any) -> None:
     from django.utils import timezone
 
-    # Pre-flight cancel check: skip run() if already cancelled.
-    operation.refresh_from_db(fields=["cancel_requested"])
-    if operation.cancel_requested:
+    # notify_finished() fires once for every terminal outcome (cancelled before
+    # start, success, cancelled mid-run, error) so watching clients get a single
+    # "done" signal regardless of path.
+    try:
+        # Pre-flight cancel check: skip run() if already cancelled.
+        operation.refresh_from_db(fields=["cancel_requested"])
+        if operation.cancel_requested:
+            operation.started_on = timezone.now()
+            operation.save(update_fields=["started_on"])
+            _handle_cancelled(operation, progress)
+            return
+
+        # Mark started
         operation.started_on = timezone.now()
         operation.save(update_fields=["started_on"])
-        _handle_cancelled(operation, progress)
-        return
 
-    # Mark started
-    operation.started_on = timezone.now()
-    operation.save(update_fields=["started_on"])
+        try:
+            operation.run(progress)
 
-    try:
-        operation.run(progress)
+            # Auto-finalize if p.result() / p.error() was not called inside run()
+            if not progress._finalized:
+                operation.finished_on = timezone.now()
+                operation.finished_successfully = True
+                operation.save(update_fields=["finished_on", "finished_successfully"])
+                progress._finalized = True
+                progress.push_finished()
 
-        # Auto-finalize if p.result() / p.error() was not called inside run()
-        if not progress._finalized:
-            operation.finished_on = timezone.now()
-            operation.finished_successfully = True
-            operation.save(update_fields=["finished_on", "finished_successfully"])
-            progress._finalized = True
-            progress.push_finished()
+        except _get_cancelled_class():
+            _handle_cancelled(operation, progress)
 
-    except _get_cancelled_class():
-        _handle_cancelled(operation, progress)
-
-    except Exception:
-        _handle_error(operation, tb.format_exc(), progress)
+        except Exception:
+            _handle_error(operation, tb.format_exc(), progress)
+    finally:
+        progress.notify_finished()
 
 
 def _get_cancelled_class() -> type:

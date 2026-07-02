@@ -172,6 +172,16 @@ class Progress:
     def push_finished(self) -> None:
         """Push terminal result fragment to watching clients (no-op on base)."""
 
+    def notify_finished(self) -> None:
+        """Signal watching clients that the operation reached a terminal state.
+
+        Called once by the runner after every terminal outcome (success, error,
+        cancelled). No-op on the base/text backends; WebProgress pushes a
+        ``liveop_finished`` message carrying the final state and the operation's
+        URL, so a client can react — e.g. navigate to the finished operation's
+        page. Purely informational: it forces no behaviour on its own.
+        """
+
     # ------------------------------------------------------------------ #
     # Web-only (NotImplementedError on base + TextProgress)               #
     # ------------------------------------------------------------------ #
@@ -499,6 +509,39 @@ class WebProgress(Progress):
             except Exception:
                 inner = ""
             push_fn(f'<div id="op-result" hx-swap-oob="true">{inner}</div>')
+
+        transaction.on_commit(_do_push)
+
+    def notify_finished(self) -> None:
+        """Push a ``liveop_finished`` signal with the operation's final state.
+
+        Deferred via transaction.on_commit so it lands after the terminal
+        result/error/cancelled fragment (same ordering guarantee as the
+        fragment pushes). Carries the operation URL so clients can navigate to
+        the finished operation's page.
+        """
+        from django.db import transaction
+
+        op = self._operation
+        push_message_fn = self._push_message
+
+        def _do_push() -> None:
+            try:
+                url = op.get_absolute_url()
+            except Exception:
+                url = ""
+            push_message_fn(
+                {
+                    # "type" routes through the consumer's chat_message handler
+                    # to the client (same envelope as liveop_html / liveop_chain).
+                    "type": "chat_message",
+                    "liveop_finished": {
+                        "pk": str(op.pk),
+                        "state": op.get_state(),
+                        "url": url,
+                    },
+                }
+            )
 
         transaction.on_commit(_do_push)
 

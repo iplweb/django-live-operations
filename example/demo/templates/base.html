@@ -58,5 +58,18 @@
 <script src="{% static 'live_operations/vendor/htmx.min.js' %}"></script>
 <script src="{% static 'channels_broadcast/js/notifications.js' %}"></script>
 <script src="{% static 'live_operations/live-operations.js' %}"></script>
+<script>
+  // Demo UX: when an operation finishes, switch to its completed view.
+  // The package emits a `liveop:finished` DOM event (see live-operations.js);
+  // we navigate to the operation's page, which renders the clean finished
+  // state (done stage stepper + result table). Short delay so the user sees
+  // the operation reach 100% first.
+  document.addEventListener("liveop:finished", function (e) {
+    var url = e.detail && e.detail.url;
+    if (!url) return;
+    if (window.location.pathname === url) return; // already on that page
+    setTimeout(function () { window.location.assign(url); }, 1500);
+  });
+</script>
 </body>
 </html>

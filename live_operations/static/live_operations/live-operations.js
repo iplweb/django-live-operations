@@ -125,6 +125,17 @@
                 cn.init(null, { subscriptionToken: next.token });
                 return;
             }
+            if (message.liveop_finished) {
+                // Terminal state reached. Dispatch a DOM event carrying
+                // {pk, state, url} so pages can react (e.g. navigate to the
+                // finished operation). This forces no behaviour by itself.
+                document.dispatchEvent(
+                    new CustomEvent("liveop:finished", {
+                        detail: message.liveop_finished,
+                    })
+                );
+                return;
+            }
             // Unknown message type — delegate to default handler.
             _origAddMessage(message);
         };
