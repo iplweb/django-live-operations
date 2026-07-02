@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model, login
-from django.http import HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect
 
 from demo.forms import DemoImportForm
@@ -33,6 +33,15 @@ class CancelDemoImportView(CancelView):
 
 class RestartDemoImportView(RestartView):
     model = DemoImport
+
+
+def healthz_view(request):
+    """Liveness probe for the Docker healthcheck.
+
+    Deliberately does no DB writes, no template render, and no login — unlike
+    /__login__/, which would create a new session row on every poll. Plain 200.
+    """
+    return HttpResponse("ok", content_type="text/plain")
 
 
 def autologin_view(request):

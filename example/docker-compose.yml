@@ -31,10 +31,16 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8000/__login__/"]
-      interval: 5s
+      # /healthz/ is side-effect-free (plain 200); /__login__/ would create a
+      # session row on every poll. start_interval polls fast during startup so
+      # the worker (depends_on web healthy) starts quickly, then interval backs
+      # off to keep steady-state logs quiet.
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/healthz/"]
+      interval: 30s
       timeout: 3s
-      retries: 20
+      retries: 5
+      start_period: 30s
+      start_interval: 2s
 
   worker:
     build:
