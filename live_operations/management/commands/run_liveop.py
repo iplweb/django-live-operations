@@ -80,9 +80,18 @@ class Command(BaseCommand):
                     self.style.WARNING("No superuser found — created admin/admin.")
                 )
 
-        # Instantiate and run
+        # Instantiate and run.
+        # In a real terminal, give TextProgress the raw sys.stdout: tqdm updates
+        # its bar in place with carriage returns and no trailing newline, but
+        # Django's self.stdout (OutputWrapper) appends a newline to every write,
+        # which turns the live bar into a wall of duplicated lines. When stdout
+        # is not a TTY (tests, pipes) fall back to self.stdout so output stays
+        # capturable — tqdm already degrades to plain line output there.
+        import sys
+
+        stream = sys.stdout if sys.stdout.isatty() else self.stdout
         op = model_cls.objects.create(owner=owner)
-        p = TextProgress(op, stream=self.stdout)
+        p = TextProgress(op, stream=stream)
 
         self.stdout.write(
             self.style.NOTICE(f"Running {model_path} (pk={op.pk}) as {owner}…")
