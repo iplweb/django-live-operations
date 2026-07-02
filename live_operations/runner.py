@@ -103,10 +103,21 @@ def task_run(operation: Any, progress: Any) -> None:
     """
     Core execution loop. Called by all runner backends.
 
-    Checks cancel_requested before starting — if already set, marks cancelled
-    without calling run(). Then calls run(), handling OperationCancelled and
-    arbitrary exceptions. Auto-finalizes as success if p.result() was not called.
+    Re-activates the operation's language (captured at enqueue) so every live
+    fragment pushed from here — status, log, stage stepper, result — renders in
+    the creator's language rather than falling back to English in the worker,
+    which has no request locale.
     """
+    from contextlib import nullcontext
+
+    from django.utils import translation
+
+    lang = getattr(operation, "language", "") or None
+    with translation.override(lang) if lang else nullcontext():
+        _task_run(operation, progress)
+
+
+def _task_run(operation: Any, progress: Any) -> None:
     from django.utils import timezone
 
     # Pre-flight cancel check: skip run() if already cancelled.

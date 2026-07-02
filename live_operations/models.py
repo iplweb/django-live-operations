@@ -45,6 +45,12 @@ class LiveOperation(models.Model):
     traceback = models.TextField(null=True, blank=True)
     result_context = models.JSONField(null=True, blank=True)
 
+    # Language the operation was created in. Live fragments are rendered from a
+    # worker / WS consumer that has no request locale, so we re-activate this
+    # language there (see runner.task_run and send_snapshot) to keep the
+    # progress UI in the creator's language instead of falling back to English.
+    language = models.CharField(max_length=20, blank=True, default="")
+
     # Placeholder progress fields — v1: not written during live run
     status_text = models.CharField(max_length=255, blank=True, default="")
     percent = models.PositiveSmallIntegerField(default=0)
@@ -106,8 +112,21 @@ class LiveOperation(models.Model):
     # ------------------------------------------------------------------ #
 
     def enqueue(self) -> None:
-        """Dispatch this operation via the configured runner."""
+        """Dispatch this operation via the configured runner.
+
+        Captures the currently active language (enqueue runs in the request,
+        so LocaleMiddleware has activated the viewer's language) and persists
+        it, so the worker can re-activate it when rendering live fragments.
+        """
+        from django.utils import translation
+
         from live_operations import runner
+
+        lang = translation.get_language()
+        if lang and self.language != lang:
+            self.language = lang
+            if self.pk is not None:
+                self.save(update_fields=["language"])
 
         return runner.enqueue(self)
 
@@ -177,7 +196,14 @@ class LiveOperation(models.Model):
         workers and async consumers.
         """
         from channels_broadcast.core import _send
+        from django.utils import translation
 
-        html = self._render_snapshot_html()
+        # The consumer renders this snapshot with no request locale; re-activate
+        # the operation's language so a mid-run connect matches the live pushes.
+        if self.language:
+            with translation.override(self.language):
+                html = self._render_snapshot_html()
+        else:
+            html = self._render_snapshot_html()
         channel = self.get_channel_name()
         _send(channel, {"liveop_html": html})
