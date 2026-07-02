@@ -4,40 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tests', '0002_add_stage_chain_models'),
+        ("tests", "0002_add_stage_chain_models"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='chainopa',
-            name='language',
-            field=models.CharField(blank=True, default='', max_length=20),
+            model_name="chainopa",
+            name="language",
+            field=models.CharField(blank=True, default="", max_length=20),
         ),
         migrations.AddField(
-            model_name='demoop',
-            name='language',
-            field=models.CharField(blank=True, default='', max_length=20),
+            model_name="demoop",
+            name="language",
+            field=models.CharField(blank=True, default="", max_length=20),
         ),
         migrations.AddField(
-            model_name='errorop',
-            name='language',
-            field=models.CharField(blank=True, default='', max_length=20),
+            model_name="errorop",
+            name="language",
+            field=models.CharField(blank=True, default="", max_length=20),
         ),
         migrations.AddField(
-            model_name='failedstageop',
-            name='language',
-            field=models.CharField(blank=True, default='', max_length=20),
+            model_name="failedstageop",
+            name="language",
+            field=models.CharField(blank=True, default="", max_length=20),
         ),
         migrations.AddField(
-            model_name='nextop',
-            name='language',
-            field=models.CharField(blank=True, default='', max_length=20),
+            model_name="nextop",
+            name="language",
+            field=models.CharField(blank=True, default="", max_length=20),
         ),
         migrations.AddField(
-            model_name='stagedop',
-            name='language',
-            field=models.CharField(blank=True, default='', max_length=20),
+            model_name="stagedop",
+            name="language",
+            field=models.CharField(blank=True, default="", max_length=20),
         ),
     ]

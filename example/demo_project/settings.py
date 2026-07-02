@@ -79,9 +79,14 @@ DATABASES = {
 
 _redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 
+# Use the pub/sub channel layer, not the default list-based core layer: the
+# core RedisChannelLayer's blocking receive raises "Timeout reading from redis"
+# after redis-py's socket timeout on an idle consumer (channels_redis 4.x +
+# redis-py 8.x). RedisPubSubChannelLayer is the right backend for group
+# broadcasting (what channels_broadcast does) and does not exhibit this.
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
         "CONFIG": {"hosts": [_redis_url]},
     }
 }
