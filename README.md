@@ -21,4 +21,25 @@ class MyImport(LiveOperation):
 The framework handles channels, tokens, OOB-swaps, snapshot-on-connect,
 throttling, and cooperative cancellation.
 
-See `docs/` for the full documentation.
+## Try the demo
+
+A self-contained demo project lives in [`example/`](example/).
+
+```bash
+# Browser demo — Daphne + Redis + Celery worker, live WebSocket progress.
+# Opens http://localhost:8000 (needs Docker).
+make demo
+
+# Zero-infra text demo — runs synchronously, prints progress to stdout.
+# No Docker, no Redis, no browser.
+make demo-text
+```
+
+Both targets also work from inside `example/` (`cd example && make demo`);
+the root `make` just delegates there. See [`example/README.md`](example/README.md)
+for what you'll see and how the demo is wired.
+
+## Documentation
+
+Full docs are published at
+**<https://iplweb.github.io/django-live-operations/>** (source in `docs/`).

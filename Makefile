@@ -6,10 +6,10 @@ test:
 docs:
 	uv run mkdocs build
 
+# Demo targets delegate to example/Makefile (single source of truth); the demo
+# is a self-contained project under example/.
 demo:
-	cd example && docker compose up --build
+	$(MAKE) -C example demo
 
 demo-text:
-	cd example && RUNNER=eager uv run python manage.py migrate --run-syncdb --noinput \
-	  && RUNNER=eager uv run python manage.py seed_demo \
-	  && RUNNER=eager uv run python manage.py run_liveop demo.DemoImport
+	$(MAKE) -C example demo-text
