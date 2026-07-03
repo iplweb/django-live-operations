@@ -1,7 +1,9 @@
 [project]
 name = "live-ops-demo"
 version = "0.1.0"
-requires-python = ">=3.10"
+# Match django-liveops (>=3.11); otherwise uv can't resolve for the 3.10
+# portion of the range (django-liveops requires 3.11+).
+requires-python = ">=3.11"
 dependencies = [
     "django>=5.2",
     "channels>=4",
