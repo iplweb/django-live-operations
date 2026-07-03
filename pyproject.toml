@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "django-liveops"
-version = "0.2.0"
+version = "0.3.0"
 description = "Long-running operations with live WebSocket+HTMX UI (no reload, no polling)"
 readme = "README.md"
 requires-python = ">=3.11"

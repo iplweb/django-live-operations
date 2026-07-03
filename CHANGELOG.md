@@ -6,19 +6,38 @@ on [Keep a Changelog](https://keepachangelog.com/) and this project adheres to
 
 ## [Unreleased]
 
+## [0.3.0]
+
 ### Added
-- `LiveOperation.get_success_url()` — return a URL to auto-redirect the
-  browser to when the operation finishes successfully (default `None` keeps
-  the user on the live page). Flows through the `liveop_finished` signal as
-  `success_url`; `liveops.js` navigates there on `FINISHED_OK`. Lets a
-  consumer skip the operations index and land on a dedicated page.
-- Demo (`example/`): a catalogue of operation types — staged import, quick
-  task, failing task, chained task, and redirect-on-success — reachable from
-  a landing page, so every shape of the framework can be tried in the browser.
+- `liveops.testing.MockProgress` — a recording, transport-free `Progress`
+  double for unit-testing a `LiveOperation.run(self, p)` without a channel
+  layer, Redis, or a worker. Records status/log/percent/stages/result/error
+  for assertions, finalizes the operation on `result()`/`error()`, and
+  supports simulated cancellation via `cancel_after=N`.
+- `LiveOperation.get_success_url()` — return a URL to auto-redirect the browser
+  to when the operation finishes successfully (default `None` keeps the user on
+  the live page). Carried in the `liveop_finished` signal as `success_url`;
+  `liveops.js` navigates there on `FINISHED_OK`, letting a consumer skip the
+  operations index and land on a dedicated page.
+- `pairs` template filter — iterate a dict in templates immune to a key named
+  `items`/`keys`/`values` (`{% for k, v in d|pairs %}`).
+
+### Changed
+- Cancel/Retry are now htmx buttons (no full-page reload); the UI updates over
+  the WebSocket. CSRF travels as an `X-CSRFToken` header injected from the
+  cookie by `liveops.js`, so it also works on WS-pushed chained containers.
+  Cancel/Restart views return `204` for htmx (redirect only as no-JS fallback);
+  `LiveOperationView` sets the CSRF cookie via `ensure_csrf_cookie`.
 
 ### Fixed
-- Demo URLs updated to the 0.2.0 op_type routing (they still used the old
-  per-pk `liveops` patterns and would `NoReverseMatch`).
+- **CSRF on cancel/restart**: the `{% live_operation %}` templatetag rendered
+  the fragment without the request, so `{% csrf_token %}` produced an empty
+  token and no CSRF cookie was set — every cancel/restart POST failed CSRF.
+  The templatetag now renders with the request.
+- **Blank result region**: a `result_context` key literally named `items`
+  made `{% for k, v in ctx.items %}` resolve to the value (dict-key lookup
+  shadows the method) and raise `TypeError`. The default result template now
+  uses `|pairs`.
 
 ## [0.2.0]
 
